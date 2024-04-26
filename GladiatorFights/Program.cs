@@ -6,7 +6,21 @@ namespace GladiatorFights
     {
         static void Main(string[] args)
         {
+            
 
+
+
+
+
+ 
+
+
+
+
+            static void CreateFighter(Fighter fighter)
+            {
+
+            }
         }
     }
 
@@ -21,7 +35,9 @@ namespace GladiatorFights
             Damage = damage;
         }
 
-        public abstract void TakeDamage(float damage);
+        public virtual void TakeDamage(float damage) => Health -= damage;
+
+        public abstract void DealingDamage(Fighter fighter);
     }
 
     class Warrior : Fighter
@@ -33,25 +49,47 @@ namespace GladiatorFights
             _chanceDoubleDamage = chanceDoubleDamage;
         }
 
-        public override void TakeDamage(float damage)
+        public override void DealingDamage(Fighter fighter)
         {
+            fighter.TakeDamage(GetCalculatedDamage());
+        }
 
+        private float GetCalculatedDamage()
+        {
+            Random random = new Random();
+            double randomValue = random.NextDouble();
+
+            if (randomValue < _chanceDoubleDamage)
+            {
+                Console.WriteLine("Удваиваем уроне!");
+                return Damage * 2;
+            }
+            else
+            {
+                return Damage;
+            }
         }
     }
 
     class Knight : Fighter
     {
-        private int _attackNumber;
-        private float _strengtheningAttack;
+        private int _attackNumber = 0;
+        private int _attackNumberStrengthen;
 
-        public Knight(float health, float damage, int attackNumber, float strengtheningAttack) : base(health, damage)
+        public Knight(float health, float damage, int attackNumber, int attackNumberStrengthen) : base(health, damage)
         {
             _attackNumber = attackNumber;
-            _strengtheningAttack = strengtheningAttack;
+            _attackNumberStrengthen = attackNumberStrengthen;
         }
 
-        public override void TakeDamage(float damage)
+        public override void DealingDamage(Fighter fighter)
         {
+            _attackNumber++;
+
+            if (_attackNumber % _attackNumberStrengthen == 0)
+                fighter.TakeDamage(Damage);
+
+            fighter.TakeDamage(Damage);
         }
     }
 
@@ -68,38 +106,58 @@ namespace GladiatorFights
             _increasedHealth = increasedHealth;
         }
 
+        public override void DealingDamage(Fighter fighter)
+        {
+            fighter.TakeDamage(Damage);
+        }
+
         public override void TakeDamage(float damage)
         {
+            base.TakeDamage(damage);
+
+            _currentRage += damage;
+
+            if (_currentRage >= _maxRage)
+            {
+                Treatment();
+                _currentRage = 0;
+            }
         }
 
-        private void Treatment()
-        {
-
-        }
+        private void Treatment() => Health += _increasedHealth;
     }
 
     class Mage : Fighter
     {
         private float _mana;
-        private float _increasedHealth;
+        private float _manaCost;
         private float _damageFireBall;
 
-        public Mage(float health, float damage, float increasedHealth, float damageFireBall) : base(health, damage)
+        public Mage(float health, float damage, float damageFireBall) : base(health, damage)
         {
-            _increasedHealth = increasedHealth;
             _damageFireBall = damageFireBall;
 
             if (damage >= _damageFireBall)
                 _damageFireBall = damage + 1;
         }
 
-        public override void TakeDamage(float damage)
+        public override void DealingDamage(Fighter fighter)
         {
+            fighter.TakeDamage(Damage);
+            fighter.TakeDamage(GetDamageFireBall());
         }
 
-        private void FireBall()
+        private float GetDamageFireBall()
         {
-
+            if (_mana >= _manaCost)
+            {
+                _mana -= _manaCost;
+                return _damageFireBall;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 
@@ -112,10 +170,23 @@ namespace GladiatorFights
             _chanceEvasion = chanceEvasion;
         }
 
+        public override void DealingDamage(Fighter fighter)
+        {
+            fighter.TakeDamage(Damage);
+        }
+
         public override void TakeDamage(float damage)
         {
+            if (TryEvasion() == false)
+                base.TakeDamage(damage);
+        }
+
+        private bool TryEvasion()
+        {
+            Random random = new Random();
+            double randomValue = random.NextDouble();
+
+            return randomValue < _chanceEvasion;
         }
     }
-
-
 }
