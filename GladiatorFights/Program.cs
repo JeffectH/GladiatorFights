@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace GladiatorFights
 {
@@ -7,47 +6,22 @@ namespace GladiatorFights
     {
         static void Main(string[] args)
         {
-            const int CommandEnterWarrior = 1;
-            const int CommandEnterKnight = 2;
-            const int CommandEnterBarbarian = 3;
-            const int CommandEnterMage = 4;
-            const int CommandEnterRogue = 5;
-
-            float helthWarrior = 100;
-            float damageWarrior = 10;
-            float chanceDoubleDamageWarrior = 0.3f;
-
-            float helthKnight = 100;
-            float damageKnight = 10;
-            int attackNumberStrengthenKnight = 3;
-
-            float helthBarbarian = 100;
-            float damageBarbarian = 10;
-            float maxRageBarbarian = 50;
-            float increasedHealthBarbarian = 10;
-
-            float helthMage = 100;
-            float damageMage = 10;
-            float manaMage = 15;
-            float manaCosMage = 6;
-            float damageFireBallMage = 12;
-
-            float helthRogue = 100;
-            float damageRogue = 10;
-            float chanceEvasionRogue = 0.3f;
-
             bool _isWork = true;
             bool _isFight = true;
 
             Fighter fighterFirst = null;
             Fighter fighterSecond = null;
 
+            //Main() - это точка входа в программу -перенесите все методы кроме Main() из класса Program в класс Арена, чтобы избавится от статичных методов
+            //CreateFighter() - дубляж кода - вызывайте метод дважды для получения каждого из бойцов
+            //EnterFighters() - switch из бойцов очень сложен для расширения, используйте список бойцов
+
             while (_isWork)
             {
                 Console.WriteLine("Привет игрок! Ты на гладиаторских боях! Ниже приведен список бойцов. Выбирай пару для боя!");
-                EnterFighters();
+                //EnterFighters(fighterFirst, fighterSecond);
                 Console.WriteLine();
-                EnterFighters();
+                //EnterFighters(fighterFirst, fighterSecond);
 
                 Console.Clear();
 
@@ -83,67 +57,100 @@ namespace GladiatorFights
                 _isWork = false;
                 Console.ReadKey();
             }
+        }
+    }
 
-            void EnterFighters()
+    class Arena
+    {
+        const int CommandEnterWarrior = 1;
+        const int CommandEnterKnight = 2;
+        const int CommandEnterBarbarian = 3;
+        const int CommandEnterMage = 4;
+        const int CommandEnterRogue = 5;
+
+        float helthWarrior = 100;
+        float damageWarrior = 10;
+        float chanceDoubleDamageWarrior = 0.3f;
+        float damageEnhancement = 2;
+
+        float helthKnight = 100;
+        float damageKnight = 10;
+        int attackNumberStrengthenKnight = 3;
+
+        float helthBarbarian = 100;
+        float damageBarbarian = 10;
+        float maxRageBarbarian = 50;
+        float increasedHealthBarbarian = 10;
+
+        float helthMage = 100;
+        float damageMage = 10;
+        float manaMage = 15;
+        float manaCosMage = 6;
+        float damageFireBallMage = 12;
+
+        float helthRogue = 100;
+        float damageRogue = 10;
+        float chanceEvasionRogue = 0.3f;
+
+        public void EnterFighters()
+        {
+            Console.WriteLine($"{CommandEnterWarrior} - Воин");
+            Console.WriteLine($"{CommandEnterKnight} - Рыцарь");
+            Console.WriteLine($"{CommandEnterBarbarian} - Варвар");
+            Console.WriteLine($"{CommandEnterMage} - Маг");
+            Console.WriteLine($"{CommandEnterRogue} - Разбойник");
+
+            Console.Write("\nВыбери бойца:");
+
+            if (int.TryParse(Console.ReadLine(), out int inputUser))
             {
-                Console.WriteLine($"{CommandEnterWarrior} - Воин");
-                Console.WriteLine($"{CommandEnterKnight} - Рыцарь");
-                Console.WriteLine($"{CommandEnterBarbarian} - Варвар");
-                Console.WriteLine($"{CommandEnterMage} - Маг");
-                Console.WriteLine($"{CommandEnterRogue} - Разбойник");
-
-                Console.Write("\nВыбери бойца:");
-
-                if (int.TryParse(Console.ReadLine(), out int inputUser))
+                switch (inputUser)
                 {
-                    switch (inputUser)
-                    {
-                        case CommandEnterWarrior:
-                            CreateFighter(new Warrior(helthWarrior, damageWarrior, chanceDoubleDamageWarrior));
-                            break;
+                    case CommandEnterWarrior:
+                        CreateFighter(new Warrior(helthWarrior, damageWarrior, chanceDoubleDamageWarrior, damageEnhancement));
+                        break;
 
-                        case CommandEnterKnight:
-                            CreateFighter(new Knight(helthKnight, damageKnight, attackNumberStrengthenKnight));
-                            break;
+                    case CommandEnterKnight:
+                        CreateFighter(new Knight(helthKnight, damageKnight, attackNumberStrengthenKnight));
+                        break;
 
-                        case CommandEnterBarbarian:
-                            CreateFighter(new Barbarian(helthBarbarian, damageBarbarian, maxRageBarbarian, increasedHealthBarbarian));
-                            break;
+                    case CommandEnterBarbarian:
+                        CreateFighter(new Barbarian(helthBarbarian, damageBarbarian, maxRageBarbarian, increasedHealthBarbarian));
+                        break;
 
-                        case CommandEnterMage:
-                            CreateFighter(new Mage(helthMage, damageMage, manaMage, manaCosMage, damageFireBallMage));
-                            break;
+                    case CommandEnterMage:
+                        CreateFighter(new Mage(helthMage, damageMage, manaMage, manaCosMage, damageFireBallMage));
+                        break;
 
-                        case CommandEnterRogue:
-                            CreateFighter(new Rogue(helthRogue, damageRogue, chanceEvasionRogue));
-                            break;
+                    case CommandEnterRogue:
+                        CreateFighter(new Rogue(helthRogue, damageRogue, chanceEvasionRogue));
+                        break;
 
-                        default:
-                            Console.WriteLine("Такой команды не существует!");
-                            break;
-                    }
-
+                    default:
+                        Console.WriteLine("Такой команды не существует!");
+                        break;
                 }
-                else
-                {
-                    Console.WriteLine("Введенный не корректные данные!");
-                }
+
             }
-
-            void CreateFighter(Fighter fighter)
+            else
             {
-                if (fighterFirst == null)
-                {
-                    fighterFirst = fighter;
-                    return;
-                }
-
-                if (fighterSecond == null)
-                {
-                    fighterSecond = fighter;
-                }
+                Console.WriteLine("Введенный не корректные данные!");
             }
         }
+
+       /* public void CreateFighter(out Fighter fighterFirst)
+        {
+            if (fighterFirst == null)
+            {
+                fighterFirst = fighter;
+                return;
+            }
+
+            if (fighterSecond == null)
+            {
+                fighterSecond = fighter;
+            }
+        }*/
     }
 
     class Fighter
@@ -163,7 +170,7 @@ namespace GladiatorFights
 
         public virtual void TakeDamage(float damage) => Health -= damage;
 
-        public virtual void DealingDamage(Fighter fighter) 
+        public virtual void DealingDamage(Fighter fighter)
         {
             fighter.TakeDamage(Damage);
         }
@@ -177,10 +184,12 @@ namespace GladiatorFights
     class Warrior : Fighter
     {
         private float _chanceDoubleDamage;
+        private float _damageEnhancement;
 
-        public Warrior(float health, float damage, float chanceDoubleDamage) : base(health, damage)
+        public Warrior(float health, float damage, float chanceDoubleDamage, float damageEnhancement) : base(health, damage)
         {
             _chanceDoubleDamage = chanceDoubleDamage;
+            _damageEnhancement = damageEnhancement;
             Name = "Воин";
         }
 
@@ -191,13 +200,12 @@ namespace GladiatorFights
 
         private float GetCalculatedDamage()
         {
-            Random random = new Random();
-            double randomValue = random.NextDouble();
+            double randomValue = UserUtils.GenerateRandomNumber();
 
             if (randomValue < _chanceDoubleDamage)
             {
                 Console.WriteLine("\nУдваиваем уроне!\n");
-                return Damage * 2;
+                return Damage * _damageEnhancement;
             }
             else
             {
@@ -222,7 +230,7 @@ namespace GladiatorFights
             _attackNumber++;
             base.DealingDamage(fighter);
 
-            if (_attackNumber % _attackNumberStrengthen == 0) 
+            if (_attackNumber % _attackNumberStrengthen == 0)
             {
                 Console.WriteLine("\nНаносим второй раз урон!\n");
                 fighter.TakeDamage(Damage);
@@ -315,7 +323,7 @@ namespace GladiatorFights
             {
                 base.TakeDamage(damage);
             }
-            else 
+            else
             {
                 Console.WriteLine("\nУклонение!\n");
             }
@@ -323,10 +331,20 @@ namespace GladiatorFights
 
         private bool TryEvasion()
         {
-            Random random = new Random();
-            double randomValue = random.NextDouble();
+            double randomValue = UserUtils.GenerateRandomNumber();
 
             return randomValue < _chanceEvasion;
+        }
+    }
+
+    class UserUtils
+    {
+        static Random s_random;
+
+        public static double GenerateRandomNumber()
+        {
+            s_random = new Random();
+            return s_random.NextDouble();
         }
     }
 }
