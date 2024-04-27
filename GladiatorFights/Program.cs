@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Remoting.Services;
 
 namespace GladiatorFights
 {
@@ -9,19 +11,17 @@ namespace GladiatorFights
             bool _isWork = true;
             bool _isFight = true;
 
+            Arena arena = new Arena();
             Fighter fighterFirst = null;
             Fighter fighterSecond = null;
-
-            //Main() - это точка входа в программу -перенесите все методы кроме Main() из класса Program в класс Арена, чтобы избавится от статичных методов
-            //CreateFighter() - дубляж кода - вызывайте метод дважды для получения каждого из бойцов
-            //EnterFighters() - switch из бойцов очень сложен для расширения, используйте список бойцов
 
             while (_isWork)
             {
                 Console.WriteLine("Привет игрок! Ты на гладиаторских боях! Ниже приведен список бойцов. Выбирай пару для боя!");
-                //EnterFighters(fighterFirst, fighterSecond);
+
+                fighterFirst = arena.EnterFighters(); 
                 Console.WriteLine();
-                //EnterFighters(fighterFirst, fighterSecond);
+                fighterSecond = arena.EnterFighters();
 
                 Console.Clear();
 
@@ -29,6 +29,9 @@ namespace GladiatorFights
 
                 while (_isFight)
                 {
+                    if (fighterFirst == null || fighterSecond == null)
+                        break;
+
                     fighterFirst.DealingDamage(fighterSecond);
                     fighterSecond.ShowStats(fighterSecond.GetName);
                     fighterSecond.DealingDamage(fighterFirst);
@@ -36,24 +39,23 @@ namespace GladiatorFights
 
                     if (fighterFirst.GetHealth <= 0 && fighterSecond.GetHealth <= 0)
                     {
-                        Console.WriteLine("НИЧЬЯ");
+                        Console.WriteLine("\nНИЧЬЯ");
                         _isFight = false;
                     }
                     else
                     {
                         if (fighterFirst.GetHealth <= 0)
                         {
-                            Console.WriteLine("Победа за " + fighterSecond.GetName);
+                            Console.WriteLine("\nПобеда за " + fighterSecond.GetName);
                             _isFight = false;
                         }
                         else if (fighterSecond.GetHealth <= 0)
                         {
-                            Console.WriteLine("Победа за " + fighterFirst.GetName);
+                            Console.WriteLine("\nПобеда за " + fighterFirst.GetName);
                             _isFight = false;
                         }
                     }
                 }
-                Console.WriteLine("\nБой окончен!");
                 _isWork = false;
                 Console.ReadKey();
             }
@@ -62,95 +64,76 @@ namespace GladiatorFights
 
     class Arena
     {
-        const int CommandEnterWarrior = 1;
-        const int CommandEnterKnight = 2;
-        const int CommandEnterBarbarian = 3;
-        const int CommandEnterMage = 4;
-        const int CommandEnterRogue = 5;
+        private const int _commandEnterWarrior = 1;
+        private const int _commandEnterKnight = 2;
+        private const int _commandEnterBarbarian = 3;
+        private const int _commandEnterMage = 4;
+        private const int _commandEnterRogue = 5;
 
-        float helthWarrior = 100;
-        float damageWarrior = 10;
-        float chanceDoubleDamageWarrior = 0.3f;
-        float damageEnhancement = 2;
+        private float _helthWarrior = 100;
+        private float _damageWarrior = 10;
+        private float _chanceDoubleDamageWarrior = 0.7f;
+        private float _damageEnhancement = 2;
 
-        float helthKnight = 100;
-        float damageKnight = 10;
-        int attackNumberStrengthenKnight = 3;
+        private float _helthKnight = 100;
+        private float _damageKnight = 10;
+        private int _attackNumberStrengthenKnight = 3;
 
-        float helthBarbarian = 100;
-        float damageBarbarian = 10;
-        float maxRageBarbarian = 50;
-        float increasedHealthBarbarian = 10;
+        private float _helthBarbarian = 100;
+        private float _damageBarbarian = 10;
+        private float _maxRageBarbarian = 50;
+        private float _increasedHealthBarbarian = 10;
 
-        float helthMage = 100;
-        float damageMage = 10;
-        float manaMage = 15;
-        float manaCosMage = 6;
-        float damageFireBallMage = 12;
+        private float _helthMage = 100;
+        private float _damageMage = 10;
+        private float _manaMage = 15;
+        private float _manaCosMage = 6;
+        private float _damageFireBallMage = 12;
 
-        float helthRogue = 100;
-        float damageRogue = 10;
-        float chanceEvasionRogue = 0.3f;
+        private float _helthRogue = 100;
+        private float _damageRogue = 10;
+        private float _chanceEvasionRogue = 0.7f;
+        private List<Fighter> _fighters;
 
-        public void EnterFighters()
+        public Arena()
         {
-            Console.WriteLine($"{CommandEnterWarrior} - Воин");
-            Console.WriteLine($"{CommandEnterKnight} - Рыцарь");
-            Console.WriteLine($"{CommandEnterBarbarian} - Варвар");
-            Console.WriteLine($"{CommandEnterMage} - Маг");
-            Console.WriteLine($"{CommandEnterRogue} - Разбойник");
+            _fighters = new List<Fighter>() {
+            new Warrior(_helthWarrior, _damageWarrior, _chanceDoubleDamageWarrior, _damageEnhancement),
+            new Knight(_helthKnight, _damageKnight, _attackNumberStrengthenKnight),
+            new Barbarian(_helthBarbarian, _damageBarbarian, _maxRageBarbarian, _increasedHealthBarbarian),
+            new Mage(_helthMage, _damageMage, _manaMage, _manaCosMage, _damageFireBallMage),
+            new Rogue(_helthRogue, _damageRogue, _chanceEvasionRogue)
+            };
+        }
+
+        public Fighter EnterFighters()
+        {
+            Console.WriteLine($"{_commandEnterWarrior} - Воин");
+            Console.WriteLine($"{_commandEnterKnight} - Рыцарь");
+            Console.WriteLine($"{_commandEnterBarbarian} - Варвар");
+            Console.WriteLine($"{_commandEnterMage} - Маг");
+            Console.WriteLine($"{_commandEnterRogue} - Разбойник");
 
             Console.Write("\nВыбери бойца:");
 
             if (int.TryParse(Console.ReadLine(), out int inputUser))
             {
-                switch (inputUser)
+                if (inputUser > 0 && _fighters.Count >= inputUser)
                 {
-                    case CommandEnterWarrior:
-                        CreateFighter(new Warrior(helthWarrior, damageWarrior, chanceDoubleDamageWarrior, damageEnhancement));
-                        break;
-
-                    case CommandEnterKnight:
-                        CreateFighter(new Knight(helthKnight, damageKnight, attackNumberStrengthenKnight));
-                        break;
-
-                    case CommandEnterBarbarian:
-                        CreateFighter(new Barbarian(helthBarbarian, damageBarbarian, maxRageBarbarian, increasedHealthBarbarian));
-                        break;
-
-                    case CommandEnterMage:
-                        CreateFighter(new Mage(helthMage, damageMage, manaMage, manaCosMage, damageFireBallMage));
-                        break;
-
-                    case CommandEnterRogue:
-                        CreateFighter(new Rogue(helthRogue, damageRogue, chanceEvasionRogue));
-                        break;
-
-                    default:
-                        Console.WriteLine("Такой команды не существует!");
-                        break;
+                    return _fighters[inputUser-1];
                 }
-
+                else
+                {
+                    Console.WriteLine("Такой команды не существует!");
+                    return null;
+                }
             }
             else
             {
                 Console.WriteLine("Введенный не корректные данные!");
+                return null;
             }
         }
-
-       /* public void CreateFighter(out Fighter fighterFirst)
-        {
-            if (fighterFirst == null)
-            {
-                fighterFirst = fighter;
-                return;
-            }
-
-            if (fighterSecond == null)
-            {
-                fighterSecond = fighter;
-            }
-        }*/
     }
 
     class Fighter
