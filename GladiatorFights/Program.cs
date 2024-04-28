@@ -31,26 +31,15 @@ namespace GladiatorFights
 
         private int _beforeInputUser;
 
-        public Arena()
-        {
-            _fighters = new List<Fighter>() {
-            new Warrior(100, 11, 0.7f, 2),
-            new Knight(100, 12, 3),
-            new Barbarian(100, 9, 50, 10),
-            new Mage(100, 8, 15, 6, 12),
-            new Rogue(100, 9.5f, 0.3f)
-            };
-        }
-
         public void Fight()
         {
             while (_isWork)
             {
                 Console.WriteLine("Привет игрок! Ты на гладиаторских боях! Ниже приведен список бойцов. Выбирай пару для боя!");
 
-                _fighterFirst = EnterFighters();
+                _fighterFirst = EnterFighter();
                 Console.WriteLine();
-                _fighterSecond = EnterFighters();
+                _fighterSecond = EnterFighter();
 
                 Console.Clear();
 
@@ -68,19 +57,19 @@ namespace GladiatorFights
                     Console.Write("Боец 2: ");
                     _fighterFirst.ShowStats(_fighterFirst.GetName());
 
-                    if (_fighterFirst.GetHealth() <= 0 && _fighterSecond.GetHealth() <= 0)
+                    if (_fighterFirst.Health <= 0 && _fighterSecond.Health <= 0)
                     {
                         Console.WriteLine("\nНИЧЬЯ");
                         _isFight = false;
                     }
                     else
                     {
-                        if (_fighterFirst.GetHealth() <= 0)
+                        if (_fighterFirst.Health <= 0)
                         {
                             Console.WriteLine("\nПобеда за " + _fighterSecond.GetName());
                             _isFight = false;
                         }
-                        else if (_fighterSecond.GetHealth() <= 0)
+                        else if (_fighterSecond.Health <= 0)
                         {
                             Console.WriteLine("\nПобеда за " + _fighterFirst.GetName());
                             _isFight = false;
@@ -92,13 +81,21 @@ namespace GladiatorFights
             }
         }
 
-        private Fighter EnterFighters()
+        private Fighter EnterFighter()
         {
-            Console.WriteLine($"{CommandEnterWarrior} - Воин");
-            Console.WriteLine($"{CommandEnterKnight} - Рыцарь");
-            Console.WriteLine($"{CommandEnterBarbarian} - Варвар");
-            Console.WriteLine($"{CommandEnterMage} - Маг");
-            Console.WriteLine($"{CommandEnterRogue} - Разбойник");
+            _fighters = new List<Fighter>() {
+            new Warrior(100, 11, 0.7f, 2),
+            new Knight(100, 12, 3),
+            new Barbarian(100, 9, 50, 10),
+            new Mage(100, 8, 15, 6, 12),
+            new Rogue(100, 9.5f, 0.3f)
+            };
+
+            Console.WriteLine($"{CommandEnterWarrior} - {_fighters[0].GetName()}");
+            Console.WriteLine($"{CommandEnterKnight} - {_fighters[1].GetName()}");
+            Console.WriteLine($"{CommandEnterBarbarian} - {_fighters[2].GetName()}");
+            Console.WriteLine($"{CommandEnterMage} - {_fighters[3].GetName()}");
+            Console.WriteLine($"{CommandEnterRogue} - {_fighters[4].GetName()}");
 
             Console.Write("\nВыбери бойца:");
 
@@ -106,8 +103,8 @@ namespace GladiatorFights
             {
                 if (inputUser > 0 && _fighters.Count >= inputUser)
                 {
-                    if(_beforeInputUser==inputUser)
-                        return _fighters[inputUser - 1].Clone() as Fighter;
+                    if (_beforeInputUser == inputUser)
+                        return _fighters[inputUser - 1];
 
                     return _fighters[inputUser - 1];
                 }
@@ -125,9 +122,8 @@ namespace GladiatorFights
         }
     }
 
-    class Fighter: ICloneable
+    class Fighter
     {
-        protected float Health;
         protected float Damage;
         protected string Name;
 
@@ -137,7 +133,8 @@ namespace GladiatorFights
             Damage = damage;
         }
 
-        public float GetHealth() => Health;
+        public float Health { get; set; }
+
         public string GetName() => Name;
 
         public virtual void TakeDamage(float damage) => Health -= damage;
@@ -150,15 +147,6 @@ namespace GladiatorFights
         public void ShowStats(string nameFighter)
         {
             Console.WriteLine(nameFighter + " колличество жизней: " + Health + " наносимый урон: " + Damage);
-        }
-
-        public object Clone()
-        {
-            Fighter clone = new Fighter(Health, Damage);
-            clone.Health = Health;
-            clone.Damage = Damage;
-
-            return clone;
         }
     }
 
