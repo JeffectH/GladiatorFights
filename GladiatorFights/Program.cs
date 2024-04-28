@@ -44,10 +44,11 @@ namespace GladiatorFights
 
                 _isFight = true;
 
+                if (_fighterFirst == null || _fighterSecond == null)
+                    break;
+
                 while (_isFight)
                 {
-                    if (_fighterFirst == null || _fighterSecond == null)
-                        break;
 
                     _fighterFirst.AttackEnemy(_fighterSecond);
                     Console.Write("Боец 1: ");
@@ -56,25 +57,28 @@ namespace GladiatorFights
                     Console.Write("Боец 2: ");
                     _fighterFirst.ShowStats(_fighterFirst.GetName());
 
-                    if (_fighterFirst.Health <= 0 && _fighterSecond.Health <= 0)
-                    {
-                        Console.WriteLine("\nНИЧЬЯ");
+                    if (_fighterFirst.Health <= 0 || _fighterSecond.Health <= 0)
                         _isFight = false;
-                    }
-                    else
+
+                }
+
+                if (_fighterFirst.Health <= 0 && _fighterSecond.Health <= 0)
+                {
+                    Console.WriteLine("\nНИЧЬЯ");
+
+                }
+                else
+                {
+                    if (_fighterFirst.Health <= 0)
                     {
-                        if (_fighterFirst.Health <= 0)
-                        {
-                            Console.WriteLine("\nПобеда за " + _fighterSecond.GetName());
-                            _isFight = false;
-                        }
-                        else if (_fighterSecond.Health <= 0)
-                        {
-                            Console.WriteLine("\nПобеда за " + _fighterFirst.GetName());
-                            _isFight = false;
-                        }
+                        Console.WriteLine("\nПобеда за " + _fighterSecond.GetName());
+                    }
+                    else if (_fighterSecond.Health <= 0)
+                    {
+                        Console.WriteLine("\nПобеда за " + _fighterFirst.GetName());
                     }
                 }
+
                 _isWork = false;
                 Console.ReadKey();
             }
@@ -90,11 +94,10 @@ namespace GladiatorFights
             new Rogue(100, 9.5f, 0.3f)
             };
 
-            Console.WriteLine($"{CommandEnterWarrior} - {_fighters[0].GetName()}");
-            Console.WriteLine($"{CommandEnterKnight} - {_fighters[1].GetName()}");
-            Console.WriteLine($"{CommandEnterBarbarian} - {_fighters[2].GetName()}");
-            Console.WriteLine($"{CommandEnterMage} - {_fighters[3].GetName()}");
-            Console.WriteLine($"{CommandEnterRogue} - {_fighters[4].GetName()}");
+            for (int i = 0; i < _fighters.Count; i++)
+            {
+                Console.WriteLine($"{i} - {_fighters[i].GetName()}");
+            }
 
             Console.Write("\nВыбери бойца:");
 
@@ -102,10 +105,7 @@ namespace GladiatorFights
             {
                 if (inputUser > 0 && _fighters.Count >= inputUser)
                 {
-                    if (_beforeInputUser == inputUser)
-                        return _fighters[inputUser - 1];
-
-                    return _fighters[inputUser - 1];
+                    return _fighters[inputUser];
                 }
                 else
                 {
@@ -283,7 +283,7 @@ namespace GladiatorFights
 
         public override void TakeDamage(float damage)
         {
-            if (TryEvasion() == false)
+            if (CanDodge() == false)
             {
                 base.TakeDamage(damage);
             }
@@ -293,7 +293,7 @@ namespace GladiatorFights
             }
         }
 
-        private bool TryEvasion()
+        private bool CanDodge()
         {
             double randomValue = UserUtils.GenerateRandomNumber();
 
