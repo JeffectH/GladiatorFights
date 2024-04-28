@@ -15,12 +15,6 @@ namespace GladiatorFights
 
     class Arena
     {
-        private const int CommandEnterWarrior = 1;
-        private const int CommandEnterKnight = 2;
-        private const int CommandEnterBarbarian = 3;
-        private const int CommandEnterMage = 4;
-        private const int CommandEnterRogue = 5;
-
         private bool _isWork = true;
         private bool _isFight = true;
 
