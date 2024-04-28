@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace GladiatorFights
 {
@@ -17,12 +18,11 @@ namespace GladiatorFights
     {
         private bool _isWork = true;
         private bool _isFight = true;
+        private bool _isWinner = true;
 
         private List<Fighter> _fighters;
         private Fighter _fighterFirst;
         private Fighter _fighterSecond;
-
-        private int _beforeInputUser;
 
         public void Fight()
         {
@@ -36,14 +36,15 @@ namespace GladiatorFights
 
                 Console.Clear();
 
-                _isFight = true;
-
                 if (_fighterFirst == null || _fighterSecond == null)
-                    break;
+                {
+                    _isFight = false;
+                    _isWinner = false;
+                    Console.WriteLine("\nБой не состоиться! Бойцы были выбраны не верно!");
+                }
 
                 while (_isFight)
                 {
-
                     _fighterFirst.AttackEnemy(_fighterSecond);
                     Console.Write("Боец 1: ");
                     _fighterSecond.ShowStats(_fighterSecond.GetName());
@@ -56,20 +57,22 @@ namespace GladiatorFights
 
                 }
 
-                if (_fighterFirst.Health <= 0 && _fighterSecond.Health <= 0)
+                if (_isWinner)
                 {
-                    Console.WriteLine("\nНИЧЬЯ");
-
-                }
-                else
-                {
-                    if (_fighterFirst.Health <= 0)
+                    if (_fighterFirst.Health <= 0 && _fighterSecond.Health <= 0)
                     {
-                        Console.WriteLine("\nПобеда за " + _fighterSecond.GetName());
+                        Console.WriteLine("\nНИЧЬЯ");
                     }
-                    else if (_fighterSecond.Health <= 0)
+                    else
                     {
-                        Console.WriteLine("\nПобеда за " + _fighterFirst.GetName());
+                        if (_fighterFirst.Health <= 0)
+                        {
+                            Console.WriteLine("\nПобеда за " + _fighterSecond.GetName());
+                        }
+                        else if (_fighterSecond.Health <= 0)
+                        {
+                            Console.WriteLine("\nПобеда за " + _fighterFirst.GetName());
+                        }
                     }
                 }
 
@@ -97,7 +100,7 @@ namespace GladiatorFights
 
             if (int.TryParse(Console.ReadLine(), out int inputUser))
             {
-                if (inputUser > 0 && _fighters.Count >= inputUser)
+                if (inputUser > 0 && _fighters.Count > inputUser)
                 {
                     return _fighters[inputUser];
                 }
