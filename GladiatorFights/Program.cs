@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Services;
 
 namespace GladiatorFights
 {
@@ -133,21 +132,17 @@ namespace GladiatorFights
             Damage = damage;
         }
 
-        public float Health { get; set; }
+        public float Health { get; private set; }
 
         public string GetName() => Name;
 
         public virtual void TakeDamage(float damage) => Health -= damage;
 
-        public virtual void AttackEnemy(Fighter fighter)
-        {
-            fighter.TakeDamage(Damage);
-        }
+        public virtual void AttackEnemy(Fighter fighter) => fighter.TakeDamage(Damage);
 
-        public void ShowStats(string nameFighter)
-        {
-            Console.WriteLine(nameFighter + " колличество жизней: " + Health + " наносимый урон: " + Damage);
-        }
+        public void ShowStats(string nameFighter) => Console.WriteLine(nameFighter + " колличество жизней: " + Health + " наносимый урон: " + Damage);
+
+        protected void RestoringHealth(float amountExtraHealth) => Health += amountExtraHealth;
     }
 
     class Warrior : Fighter
@@ -234,7 +229,7 @@ namespace GladiatorFights
             }
         }
 
-        private void Treatment() => Health += _increasedHealth;
+        private void Treatment() => RestoringHealth(_increasedHealth);
     }
 
     class Mage : Fighter
