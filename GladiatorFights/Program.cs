@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace GladiatorFights
 {
@@ -54,7 +53,6 @@ namespace GladiatorFights
 
                     if (_fighterFirst.Health <= 0 || _fighterSecond.Health <= 0)
                         _isFight = false;
-
                 }
 
                 if (_isWinner)
